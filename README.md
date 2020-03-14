@@ -1,4 +1,4 @@
-# MPU6050_light
+# MPU6050_light ![bdg](https://img.shields.io/github/license/rfetick/MPU6050_light)
 
 Lightweight, fast and simple library to communicate with the MPU6050
 
