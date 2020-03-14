@@ -62,7 +62,7 @@ class MPU6050{
     TwoWire *wire;
     float gyroXoffset, gyroYoffset, gyroZoffset;
     float temp, accX, accY, accZ, gyroX, gyroY, gyroZ;
-    float angleAccX, angleAccY, angleAccZ;
+    float angleAccX, angleAccY;
     float angleX, angleY, angleZ;
     long preInterval;
     float accCoef, gyroCoef;

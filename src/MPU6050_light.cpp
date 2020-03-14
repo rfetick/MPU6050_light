@@ -97,8 +97,9 @@ void MPU6050::update(){
   gyroY = ((float)rawData[5]) / GYRO_LSB_2_DEGSEC - gyroYoffset;
   gyroZ = ((float)rawData[6]) / GYRO_LSB_2_DEGSEC - gyroZoffset;
   
-  angleAccX = atan2(accY, sqrt(accZ * accZ + accX * accX)) * RAD_2_DEG;
-  angleAccY = - atan2(accX, sqrt(accZ * accZ + accY * accY)) * RAD_2_DEG;
+  float sgZ = (accZ>=0)-(accZ<0);
+  angleAccX = atan2(accY, sgZ*sqrt(accZ*accZ + accX*accX)) * RAD_2_DEG;
+  angleAccY = - atan2(accX, sqrt(accZ*accZ + accY*accY)) * RAD_2_DEG;
 
   unsigned long Tnew = millis();
   float dt = (Tnew - preInterval) * 1e-3;
