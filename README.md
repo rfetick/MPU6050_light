@@ -11,15 +11,21 @@ The library is made to retrieve accelero and gyro data from the MPU6050. This da
 
 The default complementary filter is `0.98` for the gyro data and `0.02` for the acccelero data. This filter compensates for the gyro drift and for the relatively high accelero noise.
 
-All data is available through getters.
+| FUNCTION        | DESCRIPTION                                                |
+|-----------------|------------------------------------------------------------|
+| begin           | Initialise MPU6050                                         |
+| calcGyroOffsets | Compute gyro offset. Device must be stable meanwhile       |
+| update          | Update data. Must be called often to get consistent angles |
 
-| NAME           | DESCRIPTION                                              |
-|----------------|----------------------------------------------------------|
-| getAccX-Y-Z    | Acceleration on X, Y or Z [units of g=9.81m/s²]          |
-| getGyroX-Y-Z   | Angular speed en X, Y or Z [deg/s]                       |
-| getAccAngleX-Y | Angles computed from accelero data [deg]. Warning: noisy |
-| getAngleX-Y-Z  | Angles computed with complementary filter [deg]          |
-| getTemp        | Device temperature [°C]                                  |
+All data is available through the following getters
+
+| FUNCTION       | DESCRIPTION                                        | UNIT          |
+|----------------|----------------------------------------------------|---------------|
+| getAccX-Y-Z    | Acceleration on X, Y or Z                          | g (=9.81m/s²) |
+| getGyroX-Y-Z   | Angular speed en X, Y or Z                         | deg/s         |
+| getAccAngleX-Y | Angles computed from accelero data. Warning: noisy | deg           |
+| getAngleX-Y-Z  | Angles computed with complementary filter          | deg           |
+| getTemp        | Device temperature                                 | °C            |
 
 ## Examples
 
