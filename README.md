@@ -5,12 +5,21 @@ Lightweight, fast and simple library to communicate with the MPU6050
 ## Description
 
 The library is made to retrieve accelero and gyro data from the MPU6050. This data is processed using a complementary filter to provide tilt angles on X and Y with respect to the horizontal rest position. The hypothesis for the validity of these angles are:
-* small linear accelerations, the gravity is the dominant one
+* small linear accelerations (the gravity is the dominant one)
 * small loop delay between two calls to `update()` so the approximation `angle[t]=angle[t-1]+gyro*dt` is valid
+* heading (angle Z) is valid for small X and Y angles
 
 The default complementary filter is `0.98` for the gyro data and `0.02` for the acccelero data. This filter compensates for the gyro drift and for the relatively high accelero noise.
 
 All data is available through getters.
+
+| NAME           | DESCRIPTION                                              |
+|----------------|----------------------------------------------------------|
+| getAccX-Y-Z    | Acceleration on X, Y or Z [units of g=9.81m/s²]          |
+| getGyroX-Y-Z   | Angular speed en X, Y or Z [deg/s]                       |
+| getAccAngleX-Y | Angles computed from accelero data [deg]. Warning: noisy |
+| getAngleX-Y-Z  | Angles computed with complementary filter [deg]          |
+| getTemp        | Device temperature [°C]                                  |
 
 ## Examples
 
