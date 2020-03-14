@@ -17,9 +17,9 @@
 #define GYRO_LSB_2_DEGSEC  65.5     // [bit/(°/s)]
 #define ACC_LSB_2_G        16384.0  // [bit/gravity]
 #define RAD_2_DEG          57.29578 // [°/rad]
-#define GYRO_OFFSET_NB_MES 3000     //
+#define GYRO_OFFSET_NB_MES 500
 #define TEMP_LSB_2_DEGREE  340.0    // [bit/celsius]
-#define TEMP_LSB_OFFSET    12412.0  //
+#define TEMP_LSB_OFFSET    12412.0
 
 #define DEFAULT_GYRO_COEFF 0.98
 

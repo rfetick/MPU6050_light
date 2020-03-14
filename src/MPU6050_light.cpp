@@ -70,6 +70,8 @@ void MPU6050::calcGyroOffsets(){
 		b |= wire->read();
 		xyz[j] += ((float)b) / GYRO_LSB_2_DEGSEC;
 	}
+	
+	delay(1);
   }
   gyroXoffset = xyz[0] / GYRO_OFFSET_NB_MES;
   gyroYoffset = xyz[1] / GYRO_OFFSET_NB_MES;
