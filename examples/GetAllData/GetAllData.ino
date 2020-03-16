@@ -17,7 +17,12 @@ long timer = 0;
 void setup() {
   Serial.begin(9600);
   Wire.begin();
-  mpu.begin();
+  
+  byte status = mpu.begin();
+  Serial.print(F("MPU6050 status: "));
+  Serial.println(status);
+  while(status!=0){ } // stop everything if could not connect to MPU6050
+  
   Serial.println(F("Calculating gyro offset, do not move MPU6050"));
   delay(1000);
   mpu.calcGyroOffsets();

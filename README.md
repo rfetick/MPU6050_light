@@ -1,6 +1,9 @@
 # MPU6050_light ![bdg](https://img.shields.io/github/license/rfetick/MPU6050_light) ![bdg](https://img.shields.io/github/v/release/rfetick/MPU6050_light) ![bdg](https://img.shields.io/github/commits-since/rfetick/MPU6050_light/latest)
 
-Lightweight, fast and simple library to communicate with the MPU6050
+**Lightweight, fast and simple library to communicate with the MPU6050**
+
+:arrows_counterclockwise: Your feedback is important. Any issue or suggestion can be reported to the `Issues` section
+
 
 ## Description
 
@@ -11,21 +14,31 @@ The library is made to retrieve accelero and gyro data from the MPU6050. This da
 
 The default complementary filter is `0.98` for the gyro data and `0.02` for the acccelero data. This filter compensates for the gyro drift and for the relatively high accelero noise.
 
-| FUNCTION        | DESCRIPTION                                                |
-|-----------------|------------------------------------------------------------|
-| begin           | Initialise MPU6050                                         |
-| calcGyroOffsets | Compute gyro offset. Device must be stable meanwhile       |
-| update          | Update data. Must be called often to get consistent angles |
+The important methods of the MPU6050 are the following ones.
 
-All data is available through the following getters
+| FUNCTION            | DESCRIPTION                                                |
+|---------------------|------------------------------------------------------------|
+| MPU6050(Wire)       | Constructor initialised with default complementary filter  |
+| MPU6050(Wire,ac,gc) | Constructor initialised with custom complementary filter   |
+| begin()             | Start communication with MPU6050                           |
+| calcGyroOffsets()   | Compute gyro offset. Device must be stable meanwhile       |
+| update()            | Update data. Must be called often to get consistent angles |
 
-| FUNCTION       | DESCRIPTION                                        | UNIT          |
-|----------------|----------------------------------------------------|---------------|
-| getAccX-Y-Z    | Acceleration on X, Y or Z                          | g (=9.81m/s²) |
-| getGyroX-Y-Z   | Angular speed en X, Y or Z                         | deg/s         |
-| getAccAngleX-Y | Angles computed from accelero data. Warning: noisy | deg           |
-| getAngleX-Y-Z  | Angles computed with complementary filter          | deg           |
-| getTemp        | Device temperature                                 | °C            |
+All data is available through the following getters. They all return a `float`.
+
+| FUNCTION         | DESCRIPTION                                        | UNIT          |
+|------------------|----------------------------------------------------|---------------|
+| getAccX-Y-Z()    | Acceleration on X, Y or Z                          | g (=9.81m/s²) |
+| getGyroX-Y-Z()   | Angular speed en X, Y or Z                         | deg/s         |
+| getAccAngleX-Y() | Angles computed from accelero data. Warning: noisy | deg           |
+| getAngleX-Y-Z()  | Angles computed with complementary filter          | deg           |
+| getTemp()        | Device temperature                                 | °C            |
+
+The gyro offsets can also be provided by the user if they are already known.
+
+| FUNCTION                 | DESCRIPTION                                  | UNIT       |
+|--------------------------|----------------------------------------------|------------|
+| setGyroOffsets(gx,gy,gz) | Set gyro offsets on X, Y or Z                | deg/s      |
 
 ## Examples
 
@@ -50,7 +63,11 @@ void loop() {
 }
 ```
 
-Note that ready-to-run examples are also provided in the dedicated `examples` folder. You may have a look at them in order to get started.
+Some ready-to-run examples are also provided in the dedicated `examples` folder. You may have a look at them in order to get started.
+
+## License
+
+See the LICENSE file
 
 ## Authors
 

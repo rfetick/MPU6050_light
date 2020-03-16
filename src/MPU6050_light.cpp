@@ -21,26 +21,29 @@ MPU6050::MPU6050(TwoWire &w, float aC, float gC){
   gyroCoef = gC;
 }
 
-void MPU6050::begin(){
-  writeMPU6050(MPU6050_SMPLRT_DIV, 0x00);
-  writeMPU6050(MPU6050_CONFIG, 0x00);
-  writeMPU6050(MPU6050_GYRO_CONFIG, 0x08);
-  writeMPU6050(MPU6050_ACCEL_CONFIG, 0x00);
-  writeMPU6050(MPU6050_PWR_MGMT_1, 0x01);
+byte MPU6050::begin(){
+  writeData(MPU6050_SMPLRT_DIV_REGISTER, 0x00);
+  writeData(MPU6050_CONFIG_REGISTER, 0x00);
+  writeData(MPU6050_GYRO_CONFIG_REGISTER, MPU6050_GYRO_CONFIG_1);
+  writeData(MPU6050_ACCEL_CONFIG_REGISTER, MPU6050_ACCEL_CONFIG_0);
+  byte status = writeData(MPU6050_PWR_MGMT_1_REGISTER, 0x01); // check only the last connection with status
   this->update();
   angleX = this->getAccAngleX();
   angleY = this->getAccAngleY();
-  preInterval = millis();
+  preInterval = millis(); // may cause issue if begin() is much before the first update()
+  return status;
 }
 
-void MPU6050::writeMPU6050(byte reg, byte data){
+byte MPU6050::writeData(byte reg, byte data){
   wire->beginTransmission(MPU6050_ADDR);
   wire->write(reg);
   wire->write(data);
-  wire->endTransmission();
+  byte status = wire->endTransmission();
+  return status;
 }
 
-byte MPU6050::readMPU6050(byte reg) {
+// This method is not used internaly, maybe by user...
+byte MPU6050::readData(byte reg) {
   wire->beginTransmission(MPU6050_ADDR);
   wire->write(reg);
   wire->endTransmission(true);
@@ -61,7 +64,7 @@ void MPU6050::calcGyroOffsets(){
   
   for(int i = 0; i < GYRO_OFFSET_NB_MES; i++){
     wire->beginTransmission(MPU6050_ADDR);
-    wire->write(0x43);
+    wire->write(MPU6050_GYRO_OUT_REGISTER);
     wire->endTransmission(false);
     wire->requestFrom((int)MPU6050_ADDR, 6);
 
@@ -80,7 +83,7 @@ void MPU6050::calcGyroOffsets(){
 
 void MPU6050::update(){
   wire->beginTransmission(MPU6050_ADDR);
-  wire->write(0x3B);
+  wire->write(MPU6050_ACCEL_OUT_REGISTER);
   wire->endTransmission(false);
   wire->requestFrom((int)MPU6050_ADDR, 14);
 
