@@ -27,6 +27,10 @@ byte MPU6050::begin(){
   writeData(MPU6050_GYRO_CONFIG_REGISTER, MPU6050_GYRO_CONFIG_1);
   writeData(MPU6050_ACCEL_CONFIG_REGISTER, MPU6050_ACCEL_CONFIG_0);
   byte status = writeData(MPU6050_PWR_MGMT_1_REGISTER, 0x01); // check only the last connection with status
+  
+  setGyroOffsets(0,0,0);
+  setAccOffset(0);
+  
   this->update();
   angleX = this->getAccAngleX();
   angleY = this->getAccAngleY();
@@ -58,11 +62,16 @@ void MPU6050::setGyroOffsets(float x, float y, float z){
   gyroZoffset = z;
 }
 
+// accelero offset only on Z axis (for the moment)
+void MPU6050::setAccOffset(float z){
+  accZoffset = z;
+}
+
 void MPU6050::calcGyroOffsets(){
   float xyz[3] = {0,0,0};
   int16_t b;
   
-  for(int i = 0; i < GYRO_OFFSET_NB_MES; i++){
+  for(int i = 0; i < CALIB_OFFSET_NB_MES; i++){
     wire->beginTransmission(MPU6050_ADDR);
     wire->write(MPU6050_GYRO_OUT_REGISTER);
     wire->endTransmission(false);
@@ -76,9 +85,31 @@ void MPU6050::calcGyroOffsets(){
 	
 	delay(1);
   }
-  gyroXoffset = xyz[0] / GYRO_OFFSET_NB_MES;
-  gyroYoffset = xyz[1] / GYRO_OFFSET_NB_MES;
-  gyroZoffset = xyz[2] / GYRO_OFFSET_NB_MES;
+  gyroXoffset = xyz[0] / CALIB_OFFSET_NB_MES;
+  gyroYoffset = xyz[1] / CALIB_OFFSET_NB_MES;
+  gyroZoffset = xyz[2] / CALIB_OFFSET_NB_MES;
+}
+
+void MPU6050::calcAccOffset(){
+  float xyz[3] = {0,0,0};
+  int16_t b;
+  
+  for(int i = 0; i < CALIB_OFFSET_NB_MES; i++){
+    wire->beginTransmission(MPU6050_ADDR);
+    wire->write(MPU6050_ACCEL_OUT_REGISTER);
+    wire->endTransmission(false);
+    wire->requestFrom((int)MPU6050_ADDR, 6);
+
+	for(int j=0;j<3;j++){
+		b  = wire->read() << 8;
+		b |= wire->read();
+		xyz[j] += ((float)b) / ACC_LSB_2_G;
+	}
+	
+	delay(1);
+  }
+  // only accelero offset on Z for the moment
+  accZoffset = xyz[2] / CALIB_OFFSET_NB_MES;
 }
 
 void MPU6050::update(){
@@ -96,7 +127,7 @@ void MPU6050::update(){
 
   accX = ((float)rawData[0]) / ACC_LSB_2_G;
   accY = ((float)rawData[1]) / ACC_LSB_2_G;
-  accZ = ((float)rawData[2]) / ACC_LSB_2_G;
+  accZ = ((float)rawData[2]) / ACC_LSB_2_G - accZoffset;
   temp = (rawData[3] + TEMP_LSB_OFFSET) / TEMP_LSB_2_DEGREE;
   gyroX = ((float)rawData[4]) / GYRO_LSB_2_DEGSEC - gyroXoffset;
   gyroY = ((float)rawData[5]) / GYRO_LSB_2_DEGSEC - gyroYoffset;
