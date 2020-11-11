@@ -24,8 +24,8 @@ MPU6050::MPU6050(TwoWire &w, float aC, float gC){
 byte MPU6050::begin(){
   writeData(MPU6050_SMPLRT_DIV_REGISTER, 0x00);
   writeData(MPU6050_CONFIG_REGISTER, 0x00);
-  writeData(MPU6050_GYRO_CONFIG_REGISTER, MPU6050_GYRO_CONFIG_1);
-  writeData(MPU6050_ACCEL_CONFIG_REGISTER, MPU6050_ACCEL_CONFIG_0);
+  writeData(MPU6050_GYRO_CONFIG_REGISTER, MPU6050_GYRO_CONFIG);
+  writeData(MPU6050_ACCEL_CONFIG_REGISTER, MPU6050_ACCEL_CONFIG);
   byte status = writeData(MPU6050_PWR_MGMT_1_REGISTER, 0x01); // check only the last connection with status
   
   setGyroOffsets(0,0,0);
