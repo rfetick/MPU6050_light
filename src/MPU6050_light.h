@@ -62,7 +62,7 @@ class MPU6050{
     MPU6050(TwoWire &w, float aC, float gC);
     byte begin();
     void setGyroOffsets(float x, float y, float z);
-	void setAccOffset(float z);
+	void setAccOffsets(float x, float y, float z);
 
     byte writeData(byte reg, byte data);
     byte readData(byte reg);
@@ -78,12 +78,14 @@ class MPU6050{
     float getGyroZ(){ return gyroZ; };
 
     void calcGyroOffsets();
-	void calcAccOffset();
+	void calcAccOffsets();
 
     float getGyroXoffset(){ return gyroXoffset; };
     float getGyroYoffset(){ return gyroYoffset; };
     float getGyroZoffset(){ return gyroZoffset; };
 	
+	float getAccXoffset(){ return accXoffset; };
+	float getAccYoffset(){ return accYoffset; };
 	float getAccZoffset(){ return accZoffset; };
 
     void update();
@@ -97,7 +99,8 @@ class MPU6050{
 
   private:
     TwoWire *wire;
-    float gyroXoffset, gyroYoffset, gyroZoffset, accZoffset;
+    float gyroXoffset, gyroYoffset, gyroZoffset;
+	float accXoffset, accYoffset, accZoffset;
     float temp, accX, accY, accZ, gyroX, gyroY, gyroZ;
     float angleAccX, angleAccY;
     float angleX, angleY, angleZ;

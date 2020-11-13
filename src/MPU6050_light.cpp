@@ -29,7 +29,7 @@ byte MPU6050::begin(){
   byte status = writeData(MPU6050_PWR_MGMT_1_REGISTER, 0x01); // check only the last connection with status
   
   setGyroOffsets(0,0,0);
-  setAccOffset(0);
+  setAccOffsets(0,0,0);
   
   this->update();
   angleX = this->getAccAngleX();
@@ -62,8 +62,9 @@ void MPU6050::setGyroOffsets(float x, float y, float z){
   gyroZoffset = z;
 }
 
-// accelero offset only on Z axis (for the moment)
-void MPU6050::setAccOffset(float z){
+void MPU6050::setAccOffsets(float x, float y, float z){
+  accXoffset = x;
+  accYoffset = y;
   accZoffset = z;
 }
 
@@ -90,7 +91,7 @@ void MPU6050::calcGyroOffsets(){
   gyroZoffset = xyz[2] / CALIB_OFFSET_NB_MES;
 }
 
-void MPU6050::calcAccOffset(){
+void MPU6050::calcAccOffsets(){
   float xyz[3] = {0,0,0};
   int16_t b;
   
@@ -108,8 +109,10 @@ void MPU6050::calcAccOffset(){
 	
 	delay(1);
   }
-  // only accelero offset on Z for the moment
-  accZoffset = xyz[2] / CALIB_OFFSET_NB_MES;
+  
+  accXoffset = xyz[0] / CALIB_OFFSET_NB_MES;
+  accYoffset = xyz[1] / CALIB_OFFSET_NB_MES;
+  accZoffset = xyz[2] / CALIB_OFFSET_NB_MES - 1.0;
 }
 
 void MPU6050::update(){
@@ -125,8 +128,8 @@ void MPU6050::update(){
     rawData[i] |= wire->read();
   }
 
-  accX = ((float)rawData[0]) / ACC_LSB_2_G;
-  accY = ((float)rawData[1]) / ACC_LSB_2_G;
+  accX = ((float)rawData[0]) / ACC_LSB_2_G - accXoffset;
+  accY = ((float)rawData[1]) / ACC_LSB_2_G - accYoffset;
   accZ = ((float)rawData[2]) / ACC_LSB_2_G - accZoffset;
   temp = (rawData[3] + TEMP_LSB_OFFSET) / TEMP_LSB_2_DEGREE;
   gyroX = ((float)rawData[4]) / GYRO_LSB_2_DEGSEC - gyroXoffset;
