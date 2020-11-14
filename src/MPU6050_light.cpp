@@ -1,24 +1,24 @@
 /* MPU6050_light library for Arduino
  * 
  * Authors: Romain JL. Fétick (github.com/rfetick)
- *            simplifications and corrections
+ *              simplifications and corrections
  *          Tockn (github.com/tockn)
- *            initial author (v1.5.2)
+ *              initial author (v1.5.2)
  */
 
 #include "MPU6050_light.h"
 #include "Arduino.h"
 
+/* INIT and BASIC FUNCTIONS */
+
 MPU6050::MPU6050(TwoWire &w){
   wire = &w;
-  accCoef = 1.0-DEFAULT_GYRO_COEFF;
-  gyroCoef = DEFAULT_GYRO_COEFF;
+  setFilterGyroCoef(DEFAULT_GYRO_COEFF);
 }
 
-MPU6050::MPU6050(TwoWire &w, float aC, float gC){
+MPU6050::MPU6050(TwoWire &w, float gyro_coeff){
   wire = &w;
-  accCoef = aC;
-  gyroCoef = gC;
+  setFilterGyroCoef(gyro_coeff);
 }
 
 byte MPU6050::begin(){
@@ -56,6 +56,8 @@ byte MPU6050::readData(byte reg) {
   return data;
 }
 
+/* SETTER */
+
 void MPU6050::setGyroOffsets(float x, float y, float z){
   gyroXoffset = x;
   gyroYoffset = y;
@@ -67,6 +69,17 @@ void MPU6050::setAccOffsets(float x, float y, float z){
   accYoffset = y;
   accZoffset = z;
 }
+
+void MPU6050::setFilterGyroCoef(float gyro_coeff){
+  if ((gyro_coeff<0) or (gyro_coeff>1)){ gyro_coeff = DEFAULT_GYRO_COEFF; } // prevent bad gyro coeff, should throw an error...
+  filterGyroCoef = gyro_coeff;
+}
+
+void MPU6050::setFilterAccCoef(float acc_coeff){
+  setFilterGyroCoef(1.0-acc_coeff);
+}
+
+/* CALC OFFSET */
 
 void MPU6050::calcGyroOffsets(){
   float xyz[3] = {0,0,0};
@@ -115,6 +128,8 @@ void MPU6050::calcAccOffsets(){
   accZoffset = xyz[2] / CALIB_OFFSET_NB_MES - 1.0;
 }
 
+/* UPDATE */
+
 void MPU6050::update(){
   wire->beginTransmission(MPU6050_ADDR);
   wire->write(MPU6050_ACCEL_OUT_REGISTER);
@@ -144,8 +159,8 @@ void MPU6050::update(){
   float dt = (Tnew - preInterval) * 1e-3;
   preInterval = Tnew;
 
-  angleX = (gyroCoef * (angleX + gyroX*dt)) + (accCoef * angleAccX);
-  angleY = (gyroCoef * (angleY + gyroY*dt)) + (accCoef * angleAccY);
+  angleX = (filterGyroCoef*(angleX + gyroX*dt)) + ((1.0-filterGyroCoef)*angleAccX);
+  angleY = (filterGyroCoef*(angleY + gyroY*dt)) + ((1.0-filterGyroCoef)*angleAccY);
   angleZ += gyroZ*dt;
 
 }

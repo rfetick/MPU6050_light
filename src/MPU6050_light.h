@@ -58,15 +58,37 @@
 
 class MPU6050{
   public:
-    MPU6050(TwoWire &w);
-    MPU6050(TwoWire &w, float aC, float gC);
+    // INIT and BASIC FUNCTIONS
+	MPU6050(TwoWire &w);
+    MPU6050(TwoWire &w, float gyro_coeff);
     byte begin();
+	
+	byte writeData(byte reg, byte data);
+    byte readData(byte reg);
+	
+	void calcGyroOffsets();
+	void calcAccOffsets();
+	
+	// MPU CONFIG SETTER
     void setGyroOffsets(float x, float y, float z);
 	void setAccOffsets(float x, float y, float z);
+	
+	void setFilterGyroCoef(float gyro_coeff);
+	void setFilterAccCoef(float acc_coeff);
 
-    byte writeData(byte reg, byte data);
-    byte readData(byte reg);
-
+	// MPU CONFIG GETTER
+	float getGyroXoffset(){ return gyroXoffset; };
+    float getGyroYoffset(){ return gyroYoffset; };
+    float getGyroZoffset(){ return gyroZoffset; };
+	
+	float getAccXoffset(){ return accXoffset; };
+	float getAccYoffset(){ return accYoffset; };
+	float getAccZoffset(){ return accZoffset; };
+	
+	float getFilterGyroCoef(){ return filterGyroCoef; };
+	float getFilterAccCoef(){ return 1.0-filterGyroCoef; };
+	
+	// INLOOP GETTER
     float getTemp(){ return temp; };
 
     float getAccX(){ return accX; };
@@ -76,26 +98,17 @@ class MPU6050{
     float getGyroX(){ return gyroX; };
     float getGyroY(){ return gyroY; };
     float getGyroZ(){ return gyroZ; };
-
-    void calcGyroOffsets();
-	void calcAccOffsets();
-
-    float getGyroXoffset(){ return gyroXoffset; };
-    float getGyroYoffset(){ return gyroYoffset; };
-    float getGyroZoffset(){ return gyroZoffset; };
 	
-	float getAccXoffset(){ return accXoffset; };
-	float getAccYoffset(){ return accYoffset; };
-	float getAccZoffset(){ return accZoffset; };
-
-    void update();
-
-    float getAccAngleX(){ return angleAccX; };
+	float getAccAngleX(){ return angleAccX; };
     float getAccAngleY(){ return angleAccY; };
 
     float getAngleX(){ return angleX; };
     float getAngleY(){ return angleY; };
     float getAngleZ(){ return angleZ; };
+
+	// INLOOP UPDATE
+    void update();
+
 
   private:
     TwoWire *wire;
@@ -105,7 +118,7 @@ class MPU6050{
     float angleAccX, angleAccY;
     float angleX, angleY, angleZ;
     long preInterval;
-    float accCoef, gyroCoef;
+    float filterGyroCoef; // complementary filter coefficient to balance gyro vs accelero data to get angle
 };
 
 #endif
