@@ -60,7 +60,6 @@ class MPU6050{
   public:
     // INIT and BASIC FUNCTIONS
 	MPU6050(TwoWire &w);
-    MPU6050(TwoWire &w, float gyro_coeff);
     byte begin();
 	
 	byte writeData(byte reg, byte data);

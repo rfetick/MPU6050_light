@@ -14,11 +14,8 @@
 MPU6050::MPU6050(TwoWire &w){
   wire = &w;
   setFilterGyroCoef(DEFAULT_GYRO_COEFF);
-}
-
-MPU6050::MPU6050(TwoWire &w, float gyro_coeff){
-  wire = &w;
-  setFilterGyroCoef(gyro_coeff);
+  setGyroOffsets(0,0,0);
+  setAccOffsets(0,0,0);
 }
 
 byte MPU6050::begin(){
@@ -27,9 +24,6 @@ byte MPU6050::begin(){
   writeData(MPU6050_GYRO_CONFIG_REGISTER, MPU6050_GYRO_CONFIG);
   writeData(MPU6050_ACCEL_CONFIG_REGISTER, MPU6050_ACCEL_CONFIG);
   byte status = writeData(MPU6050_PWR_MGMT_1_REGISTER, 0x01); // check only the last connection with status
-  
-  setGyroOffsets(0,0,0);
-  setAccOffsets(0,0,0);
   
   this->update();
   angleX = this->getAccAngleX();
