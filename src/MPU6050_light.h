@@ -43,6 +43,8 @@ class MPU6050{
     byte readData(byte reg);
 	
 	void calcOffsets(bool is_calc_gyro=true, bool is_calc_acc=true);
+	void calcGyroOffsets(){ calcOffsets(true,false); }; // retro-compatibility with v1.0.0
+	void calcAccOffsets(){ calcOffsets(false,true); }; // retro-compatibility with v1.0.0
 	
 	// MPU CONFIG SETTER
 	byte setGyroConfig(int config_num);
