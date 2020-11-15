@@ -26,29 +26,6 @@
 #define MPU6050_GYRO_OUT_REGISTER     0x43
 #define MPU6050_ACCEL_OUT_REGISTER    0x3B
 
-// --------------------------------------------
-#define MPU6050_GYRO_CONFIG_1 // choose here to define _0 or _1
-#define MPU6050_ACC_CONFIG_0  // choose here to define _0 or _1
-
-#ifdef MPU6050_GYRO_CONFIG_0
-  #define MPU6050_GYRO_CONFIG   0x00  // range = +-250 °/s
-  #define GYRO_LSB_2_DEGSEC     131.0 // [bit/(°/s)] for gyro config 0
-#endif
-#ifdef MPU6050_GYRO_CONFIG_1
-  #define MPU6050_GYRO_CONFIG   0x08  // range = +-500 °/s
-  #define GYRO_LSB_2_DEGSEC     65.5  // [bit/(°/s)] for gyro config 1
-#endif
-
-#ifdef MPU6050_ACC_CONFIG_0
-  #define MPU6050_ACCEL_CONFIG  0x00     // range = +- 2 g
-  #define ACC_LSB_2_G           16384.0  // [bit/gravity] for accel config 0
-#endif
-#ifdef MPU6050_ACC_CONFIG_1
-  #define MPU6050_ACCEL_CONFIG  0x08     // range = +- 4 g
-  #define ACC_LSB_2_G           8192.0  // [bit/gravity] for accel config 1
-#endif
-// --------------------------------------------
-
 #define RAD_2_DEG             57.29578 // [°/rad]
 #define CALIB_OFFSET_NB_MES   500
 #define TEMP_LSB_2_DEGREE     340.0    // [bit/celsius]
@@ -60,7 +37,7 @@ class MPU6050{
   public:
     // INIT and BASIC FUNCTIONS
 	MPU6050(TwoWire &w);
-    byte begin();
+    byte begin(int gyro_config_num=1, int acc_config_num=0);
 	
 	byte writeData(byte reg, byte data);
     byte readData(byte reg);
@@ -68,6 +45,9 @@ class MPU6050{
 	void calcOffsets(bool is_calc_gyro=true, bool is_calc_acc=true);
 	
 	// MPU CONFIG SETTER
+	byte setGyroConfig(int config_num);
+	byte setAccConfig(int config_num);
+	
     void setGyroOffsets(float x, float y, float z);
 	void setAccOffsets(float x, float y, float z);
 	
@@ -111,6 +91,7 @@ class MPU6050{
 
   private:
     TwoWire *wire;
+	float gyro_lsb_to_degsec, acc_lsb_to_g;
     float gyroXoffset, gyroYoffset, gyroZoffset;
 	float accXoffset, accYoffset, accZoffset;
     float temp, accX, accY, accZ, gyroX, gyroY, gyroZ;
