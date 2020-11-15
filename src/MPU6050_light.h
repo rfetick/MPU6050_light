@@ -65,8 +65,7 @@ class MPU6050{
 	byte writeData(byte reg, byte data);
     byte readData(byte reg);
 	
-	void calcGyroOffsets();
-	void calcAccOffsets();
+	void calcOffsets(bool is_calc_gyro=true, bool is_calc_acc=true);
 	
 	// MPU CONFIG SETTER
     void setGyroOffsets(float x, float y, float z);
@@ -106,6 +105,7 @@ class MPU6050{
     float getAngleZ(){ return angleZ; };
 
 	// INLOOP UPDATE
+	void fetchData(); // user should better call 'update' that includes 'fetchData'
     void update();
 
 

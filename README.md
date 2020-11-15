@@ -16,13 +16,12 @@ The default complementary filter is `0.98` for the gyro data and `0.02` for the 
 
 The important methods of the MPU6050 are the following ones.
 
-| FUNCTION            | DESCRIPTION                                                |
-|---------------------|------------------------------------------------------------|
-| MPU6050(Wire)       | Constructor initialised with default complementary filter  |
-| MPU6050(Wire,ac,gc) | Constructor initialised with custom complementary filter   |
-| begin()             | Start communication with MPU6050                           |
-| calcGyroOffsets()   | Compute gyro offset. Device must be stable meanwhile       |
-| update()            | Update data. Must be called often to get consistent angles |
+| FUNCTION               | DESCRIPTION                                                |
+|------------------------|------------------------------------------------------------|
+| MPU6050(Wire)          | Constructor                                                |
+| begin()                | Start communication with MPU6050                           |
+| calcOffsets(bool,bool) | Compute offsets. Device must be stable meanwhile           |
+| update()               | Update data. Must be called often to get consistent angles |
 
 All data is available through the following getters. They all return a `float`.
 
@@ -36,9 +35,10 @@ All data is available through the following getters. They all return a `float`.
 
 The gyro offsets can also be provided by the user if they are already known.
 
-| FUNCTION                 | DESCRIPTION                                  | UNIT       |
-|--------------------------|----------------------------------------------|------------|
-| setGyroOffsets(gx,gy,gz) | Set gyro offsets on X, Y or Z                | deg/s      |
+| FUNCTION                 | DESCRIPTION                                  | UNIT          |
+|--------------------------|----------------------------------------------|---------------|
+| setGyroOffsets(gx,gy,gz) | Set gyro offsets on X, Y or Z                | deg/s         |
+| setAccOffsets(ax,ay,az)  | Set accelero offsets on X, Y or Z            | g (=9.81m/s²) |
 
 ## Examples
 
@@ -52,7 +52,7 @@ MPU6050 mpu(Wire);
 void setup() {
   Wire.begin();
   mpu.begin();
-  mpu.calcGyroOffsets();
+  mpu.calcOffsets();
 }
 
 void loop() {

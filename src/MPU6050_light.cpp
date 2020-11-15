@@ -75,56 +75,38 @@ void MPU6050::setFilterAccCoef(float acc_coeff){
 
 /* CALC OFFSET */
 
-void MPU6050::calcGyroOffsets(){
-  float xyz[3] = {0,0,0};
-  int16_t b;
+void MPU6050::calcOffsets(bool is_calc_gyro, bool is_calc_acc){
+  if(is_calc_gyro){ setGyroOffsets(0,0,0); }
+  if(is_calc_acc){ setAccOffsets(0,0,0); }
+  float ag[6] = {0,0,0,0,0,0}; // 3*acc, 3*gyro
   
   for(int i = 0; i < CALIB_OFFSET_NB_MES; i++){
-    wire->beginTransmission(MPU6050_ADDR);
-    wire->write(MPU6050_GYRO_OUT_REGISTER);
-    wire->endTransmission(false);
-    wire->requestFrom((int)MPU6050_ADDR, 6);
-
-	for(int j=0;j<3;j++){
-		b  = wire->read() << 8;
-		b |= wire->read();
-		xyz[j] += ((float)b) / GYRO_LSB_2_DEGSEC;
-	}
-	
-	delay(1);
-  }
-  gyroXoffset = xyz[0] / CALIB_OFFSET_NB_MES;
-  gyroYoffset = xyz[1] / CALIB_OFFSET_NB_MES;
-  gyroZoffset = xyz[2] / CALIB_OFFSET_NB_MES;
-}
-
-void MPU6050::calcAccOffsets(){
-  float xyz[3] = {0,0,0};
-  int16_t b;
-  
-  for(int i = 0; i < CALIB_OFFSET_NB_MES; i++){
-    wire->beginTransmission(MPU6050_ADDR);
-    wire->write(MPU6050_ACCEL_OUT_REGISTER);
-    wire->endTransmission(false);
-    wire->requestFrom((int)MPU6050_ADDR, 6);
-
-	for(int j=0;j<3;j++){
-		b  = wire->read() << 8;
-		b |= wire->read();
-		xyz[j] += ((float)b) / ACC_LSB_2_G;
-	}
-	
-	delay(1);
+    this->fetchData();
+	ag[0] += accX;
+	ag[1] += accY;
+	ag[2] += (accZ-1.0);
+	ag[3] += gyroX;
+	ag[4] += gyroY;
+	ag[5] += gyroZ;
+	delay(1); // wait a little bit between 2 measurements
   }
   
-  accXoffset = xyz[0] / CALIB_OFFSET_NB_MES;
-  accYoffset = xyz[1] / CALIB_OFFSET_NB_MES;
-  accZoffset = xyz[2] / CALIB_OFFSET_NB_MES - 1.0;
+  if(is_calc_acc){
+    accXoffset = ag[0] / CALIB_OFFSET_NB_MES;
+    accYoffset = ag[1] / CALIB_OFFSET_NB_MES;
+    accZoffset = ag[2] / CALIB_OFFSET_NB_MES;
+  }
+  
+  if(is_calc_gyro){
+    gyroXoffset = ag[3] / CALIB_OFFSET_NB_MES;
+    gyroYoffset = ag[4] / CALIB_OFFSET_NB_MES;
+    gyroZoffset = ag[5] / CALIB_OFFSET_NB_MES;
+  }
 }
 
 /* UPDATE */
 
-void MPU6050::update(){
+void MPU6050::fetchData(){
   wire->beginTransmission(MPU6050_ADDR);
   wire->write(MPU6050_ACCEL_OUT_REGISTER);
   wire->endTransmission(false);
@@ -144,7 +126,13 @@ void MPU6050::update(){
   gyroX = ((float)rawData[4]) / GYRO_LSB_2_DEGSEC - gyroXoffset;
   gyroY = ((float)rawData[5]) / GYRO_LSB_2_DEGSEC - gyroYoffset;
   gyroZ = ((float)rawData[6]) / GYRO_LSB_2_DEGSEC - gyroZoffset;
+}
+
+void MPU6050::update(){
+  // retrieve raw data
+  this->fetchData();
   
+  // process data to get angles
   float sgZ = (accZ>=0)-(accZ<0);
   angleAccX = atan2(accY, sgZ*sqrt(accZ*accZ + accX*accX)) * RAD_2_DEG;
   angleAccY = - atan2(accX, sqrt(accZ*accZ + accY*accY)) * RAD_2_DEG;
