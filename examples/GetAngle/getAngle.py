@@ -18,7 +18,7 @@ import numpy as np
 import re
 
 #%% DEFINITIONS
-port = "COM8"   # modify this port name !!!
+port = "COM7"   # modify this port name !!!
 baudrate = 9600 # must be similar to the one in 'getAngle.ino'
 N = 200         # number of plotted measurements
 M = 2000        # number of total measurements before stop
@@ -33,7 +33,7 @@ class DynamicUpdate():
         self.ax.plot([],[],'o')
         self.ax.plot([],[],'o')
         self.ax.plot([],[],'o')
-        self.ax.set_ylim(-90,90)
+        self.ax.set_ylim(-180,180)
         self.ax.set_xlim(0, N)
         self.ax.grid()
         T = np.arange(N,dtype=float)
@@ -67,8 +67,9 @@ with Serial(port=port, baudrate=baudrate, timeout=1, writeTimeout=1) as port_ser
             if i>=N: DATA = np.roll(DATA,-1,axis=0)
             try:
                 temp = re.findall('[-.0-9]+',str(ligne)[2:-5])
-                DATA[j,:] = [float(t) for t in temp]              
-                du.on_running(DATA[:,0],DATA[:,1],DATA[:,2])
+                DATA[j,:] = [float(t) for t in temp]
+                if (i%5)==0:
+                    du.on_running(DATA[:,0],DATA[:,1],DATA[:,2])
             except:
                 print("Exception: %s"%ligne)
         port_serie.close()
