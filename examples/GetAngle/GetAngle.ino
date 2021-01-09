@@ -21,6 +21,7 @@ void setup() {
   
   Serial.println(F("Calculating offsets, do not move MPU6050"));
   delay(1000);
+  // mpu.upsideDownMounting = true; // uncomment this line if the MPU6050 is mounted upside-down
   mpu.calcOffsets(); // gyro and accelero
   Serial.println("Done!\n");
 }

@@ -68,7 +68,7 @@ class MPU6050{
 	float getFilterGyroCoef(){ return filterGyroCoef; };
 	float getFilterAccCoef(){ return 1.0-filterGyroCoef; };
 	
-	// INLOOP GETTER
+	// DATA GETTER
     float getTemp(){ return temp; };
 
     float getAccX(){ return accX; };
@@ -89,6 +89,9 @@ class MPU6050{
 	// INLOOP UPDATE
 	void fetchData(); // user should better call 'update' that includes 'fetchData'
     void update();
+	
+	// UPSIDE DOWN MOUNTING
+	bool upsideDownMounting = false;
 
 
   private:

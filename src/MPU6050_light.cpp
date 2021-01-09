@@ -173,7 +173,7 @@ void MPU6050::fetchData(){
 
   accX = ((float)rawData[0]) / acc_lsb_to_g - accXoffset;
   accY = ((float)rawData[1]) / acc_lsb_to_g - accYoffset;
-  accZ = ((float)rawData[2]) / acc_lsb_to_g - accZoffset;
+  accZ = (!upsideDownMounting - upsideDownMounting) * ((float)rawData[2]) / acc_lsb_to_g - accZoffset;
   temp = (rawData[3] + TEMP_LSB_OFFSET) / TEMP_LSB_2_DEGREE;
   gyroX = ((float)rawData[4]) / gyro_lsb_to_degsec - gyroXoffset;
   gyroY = ((float)rawData[5]) / gyro_lsb_to_degsec - gyroYoffset;
@@ -184,8 +184,8 @@ void MPU6050::update(){
   // retrieve raw data
   this->fetchData();
   
-  // process data to get angles
-  float sgZ = (accZ>=0)-(accZ<0);
+  // estimate tilt angles: this is an approximation for small angles!
+  float sgZ = (accZ>=0)-(accZ<0); // allow one angle to go from -180° to +180°
   angleAccX = atan2(accY, sgZ*sqrt(accZ*accZ + accX*accX)) * RAD_2_DEG;
   angleAccY = - atan2(accX, sqrt(accZ*accZ + accY*accY)) * RAD_2_DEG;
 
