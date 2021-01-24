@@ -27,3 +27,5 @@ See the LICENSE file
 [rfetick](https://github.com/rfetick) : modifications for better memory management, speed and efficiency.
 
 [tockn](https://github.com/tockn) : initial author of the library (v1.5.2)
+
+The library has also been improved thanks to the comments of [edgar-bonet](https://github.com/edgar-bonet) and [augustosc](https://github.com/augustosc)

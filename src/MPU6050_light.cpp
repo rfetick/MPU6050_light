@@ -26,11 +26,12 @@ MPU6050::MPU6050(TwoWire &w){
 }
 
 byte MPU6050::begin(int gyro_config_num, int acc_config_num){
+  // changed calling register sequence [https://github.com/rfetick/MPU6050_light/issues/1] -> thanks to augustosc
+  byte status = writeData(MPU6050_PWR_MGMT_1_REGISTER, 0x01); // check only the first connection with status
   writeData(MPU6050_SMPLRT_DIV_REGISTER, 0x00);
   writeData(MPU6050_CONFIG_REGISTER, 0x00);
   setGyroConfig(gyro_config_num);
   setAccConfig(acc_config_num);
-  byte status = writeData(MPU6050_PWR_MGMT_1_REGISTER, 0x01); // check only the last connection with status
   
   this->update();
   angleX = this->getAccAngleX();
