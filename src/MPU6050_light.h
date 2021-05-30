@@ -3,10 +3,10 @@
  *
  * Mapping of the different gyro and accelero configurations:
  *
- * GYRO_CONFIG_[0,1,2,3] range = +- [250, 500,1000,2000] °/s
- *                       sensi =    [131,65.5,32.8,16.4] bit/(°/s)
+ * GYRO_CONFIG_[0,1,2,3] range = +- [250, 500,1000,2000] deg/s
+ *                       sensi =    [131,65.5,32.8,16.4] bit/(deg/s)
  *
- * ACC_CONFIG_[0,1,2,3] range = +- [    2,   4,   8,  16] times the gravity (9.81m/s²)
+ * ACC_CONFIG_[0,1,2,3] range = +- [    2,   4,   8,  16] times the gravity (9.81 m/s^2)
  *                      sensi =    [16384,8192,4096,2048] bit/gravity
 */
 
@@ -26,7 +26,7 @@
 #define MPU6050_GYRO_OUT_REGISTER     0x43
 #define MPU6050_ACCEL_OUT_REGISTER    0x3B
 
-#define RAD_2_DEG             57.29578 // [°/rad]
+#define RAD_2_DEG             57.29578 // [deg/rad]
 #define CALIB_OFFSET_NB_MES   500
 #define TEMP_LSB_2_DEGREE     340.0    // [bit/celsius]
 #define TEMP_LSB_OFFSET       12412.0
@@ -45,6 +45,9 @@ class MPU6050{
 	void calcOffsets(bool is_calc_gyro=true, bool is_calc_acc=true);
 	void calcGyroOffsets(){ calcOffsets(true,false); }; // retro-compatibility with v1.0.0
 	void calcAccOffsets(){ calcOffsets(false,true); }; // retro-compatibility with v1.0.0
+	
+	void setAddress(uint8_t addr){ address = addr; };
+	uint8_t getAddress(){ return address; };
 	
 	// MPU CONFIG SETTER
 	byte setGyroConfig(int config_num);
@@ -96,6 +99,7 @@ class MPU6050{
 
   private:
     TwoWire *wire;
+	uint8_t address = MPU6050_ADDR; // 0x68 or 0x69
 	float gyro_lsb_to_degsec, acc_lsb_to_g;
     float gyroXoffset, gyroYoffset, gyroZoffset;
 	float accXoffset, accYoffset, accZoffset;

@@ -36,12 +36,12 @@ byte MPU6050::begin(int gyro_config_num, int acc_config_num){
   this->update();
   angleX = this->getAccAngleX();
   angleY = this->getAccAngleY();
-  preInterval = millis(); // may cause issue if begin() is much before the first update()
+  preInterval = millis(); // may cause lack of angular accuracy if begin() is much before the first update()
   return status;
 }
 
 byte MPU6050::writeData(byte reg, byte data){
-  wire->beginTransmission(MPU6050_ADDR);
+  wire->beginTransmission(address);
   wire->write(reg);
   wire->write(data);
   byte status = wire->endTransmission();
@@ -50,10 +50,10 @@ byte MPU6050::writeData(byte reg, byte data){
 
 // This method is not used internaly, maybe by user...
 byte MPU6050::readData(byte reg) {
-  wire->beginTransmission(MPU6050_ADDR);
+  wire->beginTransmission(address);
   wire->write(reg);
   wire->endTransmission(true);
-  wire->requestFrom(MPU6050_ADDR, 1);
+  wire->requestFrom(address,(uint8_t) 1);
   byte data =  wire->read();
   return data;
 }
@@ -63,19 +63,19 @@ byte MPU6050::readData(byte reg) {
 byte MPU6050::setGyroConfig(int config_num){
   byte status;
   switch(config_num){
-    case 0: // range = +- 250 °/s
+    case 0: // range = +- 250 deg/s
 	  gyro_lsb_to_degsec = 131.0;
 	  status = writeData(MPU6050_GYRO_CONFIG_REGISTER, 0x00);
 	  break;
-	case 1: // range = +- 500 °/s
+	case 1: // range = +- 500 deg/s
 	  gyro_lsb_to_degsec = 65.5;
 	  status = writeData(MPU6050_GYRO_CONFIG_REGISTER, 0x08);
 	  break;
-	case 2: // range = +- 1000 °/s
+	case 2: // range = +- 1000 deg/s
 	  gyro_lsb_to_degsec = 32.8;
 	  status = writeData(MPU6050_GYRO_CONFIG_REGISTER, 0x10);
 	  break;
-	case 3: // range = +- 2000 °/s
+	case 3: // range = +- 2000 deg/s
 	  gyro_lsb_to_degsec = 16.4;
 	  status = writeData(MPU6050_GYRO_CONFIG_REGISTER, 0x18);
 	  break;
@@ -167,10 +167,10 @@ void MPU6050::calcOffsets(bool is_calc_gyro, bool is_calc_acc){
 /* UPDATE */
 
 void MPU6050::fetchData(){
-  wire->beginTransmission(MPU6050_ADDR);
+  wire->beginTransmission(address);
   wire->write(MPU6050_ACCEL_OUT_REGISTER);
   wire->endTransmission(false);
-  wire->requestFrom((int)MPU6050_ADDR, 14);
+  wire->requestFrom(address,(uint8_t) 14);
 
   int16_t rawData[7]; // [ax,ay,az,temp,gx,gy,gz]
 
@@ -193,9 +193,9 @@ void MPU6050::update(){
   this->fetchData();
   
   // estimate tilt angles: this is an approximation for small angles!
-  float sgZ = (accZ>=0)-(accZ<0); // allow one angle to go from -180° to +180°
-  angleAccX =   atan2(accY, sgZ*sqrt(accZ*accZ + accX*accX)) * RAD_2_DEG; // [-180°,+180°]
-  angleAccY = - atan2(accX,     sqrt(accZ*accZ + accY*accY)) * RAD_2_DEG; // [- 90°,+ 90°]
+  float sgZ = (accZ>=0)-(accZ<0); // allow one angle to go from -180 to +180 degrees
+  angleAccX =   atan2(accY, sgZ*sqrt(accZ*accZ + accX*accX)) * RAD_2_DEG; // [-180,+180] deg
+  angleAccY = - atan2(accX,     sqrt(accZ*accZ + accY*accY)) * RAD_2_DEG; // [- 90,+ 90] deg
 
   unsigned long Tnew = millis();
   float dt = (Tnew - preInterval) * 1e-3;
