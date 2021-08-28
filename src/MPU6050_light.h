@@ -106,7 +106,7 @@ class MPU6050{
     float temp, accX, accY, accZ, gyroX, gyroY, gyroZ;
     float angleAccX, angleAccY;
     float angleX, angleY, angleZ;
-    long preInterval;
+    unsigned long preInterval;
     float filterGyroCoef; // complementary filter coefficient to balance gyro vs accelero data to get angle
 };
 
