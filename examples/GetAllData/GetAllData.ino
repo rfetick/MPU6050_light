@@ -12,7 +12,7 @@
 
 MPU6050 mpu(Wire);
 
-long timer = 0;
+unsigned long timer = 0;
 
 void setup() {
   Serial.begin(9600);
