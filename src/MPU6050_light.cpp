@@ -205,6 +205,6 @@ void MPU6050::update(){
   // https://github.com/gabriel-milan/TinyMPU6050/issues/6
   angleX = wrap(filterGyroCoef*(angleAccX + wrap(angleX +     gyroX*dt - angleAccX,180)) + (1.0-filterGyroCoef)*angleAccX,180);
   angleY = wrap(filterGyroCoef*(angleAccY + wrap(angleY + sgZ*gyroY*dt - angleAccY, 90)) + (1.0-filterGyroCoef)*angleAccY, 90);
-  angleZ += gyroZ*dt; // not wrapped
-
+  angleZ += gyroZ*dt;
+  angleZ = wrap(angleZ, 180);
 }
