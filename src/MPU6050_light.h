@@ -96,6 +96,10 @@ class MPU6050{
 	// UPSIDE DOWN MOUNTING
 	bool upsideDownMounting = false;
 
+	void resetAllAngles();
+	void resetAngleX();
+	void resetAngleY();
+	void resetAngleZ();
 
   private:
     TwoWire *wire;

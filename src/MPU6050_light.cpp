@@ -208,3 +208,21 @@ void MPU6050::update(){
   angleZ += gyroZ*dt; // not wrapped
 
 }
+
+/* RESET ANGLE */
+
+void MPU6050::resetAllAngles(){
+  angleX = angleY = angleZ = 0;
+}
+
+void MPU6050::resetAngleX(){
+  angleX = 0;
+}
+
+void MPU6050::resetAngleY(){
+  angleY = 0;
+}
+
+void MPU6050::resetAngleZ(){
+  angleZ = 0;
+}
